@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodPicker ITF - สุ่มเมนูอาหาร</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Kanit', sans-serif;
+      background-color: #f0f4f9;
+      color: #2d3748;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 1. Navbar ด้านบนสุด */
+    .navbar {
+      background-color: #3b82f6;
+      color: #ffffff;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+    }
+
+    .navbar .student-id {
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      opacity: 0.95;
+    }
+
+    .navbar .title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .navbar .week-tag {
+      font-size: 0.95rem;
+      font-weight: 500;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    /* Container กลางหน้าจอ */
+    .main-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    /* 2. การ์ดแสดงผลข้อมูลอาหาร */
+    .food-card {
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+      padding: 36px 32px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .food-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.12);
+    }
+
+    /* รูปภาพสำหรับแสดงเมนูอาหาร */
+    .image-wrapper {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 24px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      border: 5px solid #ffffff;
+      outline: 3px solid #ff6b6b;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #fff5f5;
+    }
+
+    .image-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease, opacity 0.3s ease;
+    }
+
+    /* ชื่อเมนูอาหาร */
+    .food-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #e03131;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    /* คำอธิบายเมนูอาหาร */
+    .food-desc {
+      font-size: 0.95rem;
+      color: #718096;
+      line-height: 1.6;
+      margin-bottom: 16px;
+      min-height: 48px;
+    }
+
+    /* ราคาของอาหาร */
+    .food-price {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #c92a2a;
+      background: #ffe3e3;
+      padding: 6px 18px;
+      border-radius: 20px;
+      margin-bottom: 26px;
+      display: inline-block;
+    }
+
+    /* 3. ปุ่มสำหรับทำการสุ่ม */
+    .random-btn {
+      background: linear-gradient(135deg, #ff6b6b, #fa5252);
+      color: #ffffff;
+      border: none;
+      border-radius: 24px;
+      padding: 13px 36px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      font-family: 'Kanit', sans-serif;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(250, 82, 82, 0.35);
+      transition: all 0.2s ease;
+      width: 80%;
+      letter-spacing: 0.5px;
+    }
+
+    .random-btn:hover {
+      background: linear-gradient(135deg, #fa5252, #e03131);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(250, 82, 82, 0.45);
+    }
+
+    .random-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 12px rgba(250, 82, 82, 0.3);
+    }
+
+    .photo-credit { margin-top: 16px; font-size: 0.8rem; color: #4a5568; }
+    .photo-credit a { color: #1d4ed8; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
+
+    /* Animation เวลาสุ่ม */
+    .animate-pop {
+      animation: popEffect 0.35s ease-out;
+    }
+
+    @keyframes popEffect {
+      0% {
+        opacity: 0.4;
+        transform: scale(0.92);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .navbar {
+        padding: 12px 18px;
+      }
+      .navbar .title {
+        font-size: 1.05rem;
+      }
+      .navbar .student-id, .navbar .week-tag {
+        font-size: 0.85rem;
+      }
+      .food-card {
+        padding: 28px 20px;
+      }
+      .image-wrapper {
+        width: 180px;
+        height: 180px;
+      }
+      .food-name {
+        font-size: 1.4rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Navbar ด้านบนสุด -->
+  <nav class="navbar">
+    <div class="student-id">69070128</div>
+    <div class="title">FOODPICKER ITF</div>
+    <div class="week-tag">Week15</div>
+  </nav>
+
+  <!-- Container จัดกึ่งกลาง -->
+  <main class="main-container">
+    <div class="food-card" id="food-card" aria-live="polite" aria-atomic="true">
+      <!-- รูปภาพเมนูอาหาร -->
+      <div class="image-wrapper">
+        <img id="food-img" src="images/khao-man-gai.jpg" alt="ข้าวมันไก่">
+      </div>
+
+      <!-- ชื่อเมนูอาหาร -->
+      <h2 class="food-name" id="food-name">ข้าวมันไก่</h2>
+
+      <!-- คำอธิบายเมนูอาหาร -->
+      <p class="food-desc" id="food-desc">ข้าวมันหอมนุ่ม เสิร์ฟพร้อมไก่ต้มเนื้อฉ่ำและน้ำจิ้มเต้าเจี้ยวรสเด็ด</p>
+
+      <!-- ราคาของอาหาร -->
+      <div class="food-price" id="food-price">ราคา 50 - 60 บาท</div>
+
+      <!-- ปุ่มสำหรับทำการสุ่ม -->
+      <button type="button" class="random-btn" id="random-btn">สุ่มเมนูอาหาร</button>
+      <p class="photo-credit"><a href="images/CREDITS.txt">ที่มาและสัญญาอนุญาตภาพอาหาร</a></p>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
